@@ -1,18 +1,29 @@
 import sqlite3
 import telebot, time
 bot = telebot.TeleBot('1881707340:AAGMbbNZQVU832bLSiyk7LaSk7UXHUMPBdI')
+
+
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
-    connect = sqlite3.connect(r'C:\Users\manager\Desktop\Аня\Данила\db1.db')
+    connect = sqlite3.connect('C:\\Users\\manager\\Desktop\\Аня\\Данила\\db1.db')
     cursor = connect.cursor()
-    if len(cursor.execute(f'SELECT * from programm where id = "{message.from_user.id}"').fetchall()) == 0:
-        cursor.execute(f'INSERT into programm (db_db, id) VALUES ("0", "{message.from_user.id}")')
-        connect.commit()
     msg=message.text.lower()
     if msg[-1]=='?':
-        cursor.execute(f'UPDATE programm SET db_db = db_db + 1 where id = "{id}"')
-        connect.commit()
+        if bd(1,message) == 0:
+            cursor.execute(f'INSERT into programm (db_db, id) VALUES ("0", "{message.from_user.id}")')
+            connect.commit()
+        elif bd(1,message) == 2:
+            cursor.execute(f'UPDATE programm SET db_db = db_db + 1 where id = "{id}"')
+            connect.commit()
         bot.send_message(message.chat.id,f'[мне лень искать, ищи сам](google.gik-team.com/?q={msg[:(len(msg))-1]})', parse_mode = 'MarkdownV2', disable_web_page_preview = True)
+
+def bd(i,message):
+    connect = sqlite3.connect('C:\\Users\\manager\\Desktop\\Аня\\Данила\\db1.db')
+    cursor = connect.cursor()
+    if i==1:
+        print(cursor.execute(f'SELECT * from programm where id = "{message.from_user.id}"').fetchall())
+        return len(cursor.execute(f'SELECT * from programm where id = "{message.from_user.id}"').fetchall()[0])
+
 while True:
     try:
         bot.polling(none_stop=True)
